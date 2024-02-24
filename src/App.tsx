@@ -1,24 +1,24 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import React from "react";
+
+import "./style.css";
+import ScrapeForm from "./components/ScrapeForm";
+import CloseButton from "./components/CloseButton";
+import Loader from "./components/Loader";
+import WordsContainer from "./components/WordsContainer";
+import Transition from "./components/Transition";
+import Info from "./components/Info";
+import ButtonsContainer from "./components/ButtonsContainer";
 
 function App() {
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      <ScrapeForm />
+      <CloseButton />
+      <Loader />
+      <WordsContainer />
+      <ButtonsContainer />
+      <Transition />
+      <Info />
     </div>
   );
 }
