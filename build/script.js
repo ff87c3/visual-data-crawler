@@ -19,322 +19,325 @@ function speak(text) {
 
 /////////
 
-/* let selectedVoice = null;
+document.addEventListener('DOMContentLoaded', function () {
 
-function populateVoices() {
-    const voices = speechSynthesis.getVoices();
-    selectedVoice = voices.find(voice => voice.name === 'Google UK English Female');
-}
 
-speechSynthesis.onvoiceschanged = populateVoices;
+    let selectedVoice = null;
 
-populateVoices();
-
-/////////
-
-const soundToggleButton = document.getElementById('soundToggleButton');
-
-// This variable tracks if the sound is allowed to play
-let isSoundEnabled = false;
-
-// Function to handle speaking text
-function speak(text) {
-    window.speechSynthesis.cancel();
-    if (isSoundEnabled) {
-        const utterance = new SpeechSynthesisUtterance(text);
-
-        utterance.rate = 0.8;
-
-        window.speechSynthesis.speak(utterance);
-
-        if (selectedVoice) {
-            utterance.voice = selectedVoice;
-        }
+    function populateVoices() {
+        const voices = speechSynthesis.getVoices();
+        selectedVoice = voices.find(voice => voice.name === 'Google UK English Female');
     }
-}
 
-// Toggle sound function
-function toggleSound() {
-    isSoundEnabled = !isSoundEnabled;
-    soundToggleButton.style.textDecoration = isSoundEnabled ? 'none' : 'line-through';
-    if (!isSoundEnabled) {
+    speechSynthesis.onvoiceschanged = populateVoices;
+
+    populateVoices();
+
+    /////////
+
+    const soundToggleButton = document.getElementById('soundToggleButton');
+
+    // This variable tracks if the sound is allowed to play
+    let isSoundEnabled = false;
+
+    // Function to handle speaking text
+    function speak(text) {
         window.speechSynthesis.cancel();
-    }
-}
+        if (isSoundEnabled) {
+            const utterance = new SpeechSynthesisUtterance(text);
 
- soundToggleButton.addEventListener('click', toggleSound);
- 
-toggleSound(); */
+            utterance.rate = 0.8;
 
-////////////
+            window.speechSynthesis.speak(utterance);
 
-
-const loader = document.getElementById('loader');
-const container = document.querySelector('#words-container');
-const wordCountTag = document.getElementById('wordCount');
-const wordFrequency = document.getElementById('wordFrequency');
-const input = document.querySelector('#url');
-const info = document.getElementById('info')
-const openClose = document.getElementById('toggleOpenClose')
-const sortingWordsButton = document.getElementById('wordsModeButton');
-const viewportWidth = window.innerWidth;
-const viewportHeight = window.innerHeight;
-const wordCountContainer = document.getElementById('wordCountContainer');
-const inputForm = document.getElementById('scrapeForm');
-
-
-let isOpen = true
-
-openClose.addEventListener('click', () => {
-
-    if (isOpen) {
-        openClose.innerHTML = '⟳'
-        wordCountContainer.style.opacity = 0;
-        inputForm.style.opacity = 0;
-        isOpen = false
-    } else {
-        openClose.innerHTML = 'X'
-        wordCountContainer.style.opacity = 1;
-        inputForm.style.opacity = 1;
-        isOpen = true
-    }
-})
-
-
-////////
-
-document.getElementById('scrapeForm').addEventListener('submit', function (event) {
-
-    event.preventDefault();
-
-    let url = document.getElementById('url').value;
-
-
-    info.style.display = 'none'
-    container.innerHTML = '';
-    input.value = '';
-    wordCountTag.style.display = 'none'
-    loader.style.display = 'block'
-    wordFrequency.style.display = 'none'
-    loader.textContent = 'fetching words'
-
-    if (!url.startsWith('https://') && !url.startsWith('http://')) {
-        url = 'https://' + url;
-    }
-
-    fetch('../api/serverless', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ url })
-    }).then(response => {
-        if (!response.ok) {
-            throw new Error('Network response was not ok');
+            if (selectedVoice) {
+                utterance.voice = selectedVoice;
+            }
         }
-        return response.json();
+    }
+
+    // Toggle sound function
+    function toggleSound() {
+        isSoundEnabled = !isSoundEnabled;
+        soundToggleButton.style.textDecoration = isSoundEnabled ? 'none' : 'line-through';
+        if (!isSoundEnabled) {
+            window.speechSynthesis.cancel();
+        }
+    }
+
+    soundToggleButton.addEventListener('click', toggleSound);
+
+    toggleSound();
+
+    ////////////
+
+
+    const loader = document.getElementById('loader');
+    const container = document.querySelector('#words-container');
+    const wordCountTag = document.getElementById('wordCount');
+    const wordFrequency = document.getElementById('wordFrequency');
+    const input = document.querySelector('#url');
+    const info = document.getElementById('info')
+    const openClose = document.getElementById('toggleOpenClose')
+    const sortingWordsButton = document.getElementById('wordsModeButton');
+    const viewportWidth = window.innerWidth;
+    const viewportHeight = window.innerHeight;
+    const wordCountContainer = document.getElementById('wordCountContainer');
+    const inputForm = document.getElementById('scrapeForm');
+
+
+    let isOpen = true
+
+    openClose.addEventListener('click', () => {
+
+        if (isOpen) {
+            openClose.innerHTML = '⟳'
+            wordCountContainer.style.opacity = 0;
+            inputForm.style.opacity = 0;
+            isOpen = false
+        } else {
+            openClose.innerHTML = 'X'
+            wordCountContainer.style.opacity = 1;
+            inputForm.style.opacity = 1;
+            isOpen = true
+        }
     })
-        .then(data => {
-            let wordCount = 0;
-
-            const text = data.text || 'invalid URL, try another one';
-            const rawArray = text.split(/\s+/);
-            const wordsArray = rawArray;
-            const wordsArrayWithoutSignsLowerCase = wordsArray.map(word => word.replace(/[\.:,...)(;&*?/_©<>-]/, '').toLowerCase());
-            const wordsObject = {};
-
-            wordCountTag.style.display = 'block'
-            wordCountTag.innerHTML = wordCount;
-            container.innerHTML = '';
-            loader.style.display = 'none'
-            //soundToggleButton.style.display = 'block'
-            sortingWordsButton.style.display = 'block'
-            openClose.style.display = 'block'
-
-            wordsArrayWithoutSignsLowerCase.forEach((word) => {
-                if (wordsObject.hasOwnProperty(word)) {
-                    wordsObject[word] += 1;
-                } else {
-                    wordsObject[word] = 1;
-                }
-            })
-
-            const keysToRemove = ['the', 'in', 'a', 'of', 'by', 'is', 'and', 'or', 'but', 'because', 'so', 'unless', 'until', 'with', 'to', 'on'];
 
 
-            keysToRemove.forEach(keyToRemove => {
-                if (wordsObject.hasOwnProperty(keyToRemove)) {
-                    delete wordsObject[keyToRemove];
-                }
-            });
+    ////////
 
-            // sorting frequencies
+    document.getElementById('scrapeForm').addEventListener('submit', function (event) {
 
-            const sortedFrequenciesArray = Object.entries(wordsObject).sort((a, b) => b[1] - a[1]);
-            //const sortedFrequenciesArray = Object.entries(wordsObject).sort((a, b) => a[1] - b[1]);
-            const sortedObject = {};
+        event.preventDefault();
 
-            for (let [key, value] of sortedFrequenciesArray) {
-                sortedObject[key] = value;
+        let url = document.getElementById('url').value;
+
+
+        info.style.display = 'none'
+        container.innerHTML = '';
+        input.value = '';
+        wordCountTag.style.display = 'none'
+        loader.style.display = 'block'
+        wordFrequency.style.display = 'none'
+        loader.textContent = 'fetching words'
+
+        if (!url.startsWith('https://') && !url.startsWith('http://')) {
+            url = 'https://' + url;
+        }
+
+        fetch('../api/serverless', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ url })
+        }).then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
             }
+            return response.json();
+        })
+            .then(data => {
+                let wordCount = 0;
 
-            // sorting alphqbetically 
+                const text = data.text || 'invalid URL, try another one';
+                const rawArray = text.split(/\s+/);
+                const wordsArray = rawArray;
+                const wordsArrayWithoutSignsLowerCase = wordsArray.map(word => word.replace(/[\.:,...)(;&*?/_©<>-]/, '').toLowerCase());
+                const wordsObject = {};
 
-            const sortedAlphabeticallyArray = Object.entries(wordsObject).sort()
-
-            const sortedObjectAlphabetically = {};
-
-            for (let [key, value] of sortedAlphabeticallyArray) {
-                sortedObjectAlphabetically[key] = value;
-            }
-
-            sortingWordsButton.addEventListener('click', toggleWordsMode)
-
-            function toggleWordsMode() {
-                if (stopSortingWordsFlag) {
-                    sortingWords();
-                } else {
-                    randomWords();
-                }
-            }
-
-            let stopRandomWordsFlag;
-            function stopRandomWords() {
-                stopRandomWordsFlag = true;
-            }
-
-            let stopSortingWordsFlag;
-            function stopSortingWords() {
-                stopSortingWordsFlag = true;
-            }
-
-            // random words
-            function randomWords() {
-
-                stopSortingWords()
-
-                stopRandomWordsFlag = false;
-
-                sortingWordsButton.innerHTML = 'sort'
-
-                wordCount = 0;
-
+                wordCountTag.style.display = 'block'
+                wordCountTag.innerHTML = wordCount;
                 container.innerHTML = '';
-                container.style.flexDirection = 'unset';
-                container.style.overflow = 'hidden';
-                container.style.alignItems = 'unset';
+                loader.style.display = 'none'
+                soundToggleButton.style.display = 'block'
+                sortingWordsButton.style.display = 'block'
+                openClose.style.display = 'block'
+
+                wordsArrayWithoutSignsLowerCase.forEach((word) => {
+                    if (wordsObject.hasOwnProperty(word)) {
+                        wordsObject[word] += 1;
+                    } else {
+                        wordsObject[word] = 1;
+                    }
+                })
+
+                const keysToRemove = ['the', 'in', 'a', 'of', 'by', 'is', 'and', 'or', 'but', 'because', 'so', 'unless', 'until', 'with', 'to', 'on'];
 
 
-                Object.keys(wordsObject).forEach((word, index) => {
+                keysToRemove.forEach(keyToRemove => {
+                    if (wordsObject.hasOwnProperty(keyToRemove)) {
+                        delete wordsObject[keyToRemove];
+                    }
+                });
 
-                    if (stopRandomWordsFlag) return;
+                // sorting frequencies
 
-                    setTimeout(() => {
+                const sortedFrequenciesArray = Object.entries(wordsObject).sort((a, b) => b[1] - a[1]);
+                //const sortedFrequenciesArray = Object.entries(wordsObject).sort((a, b) => a[1] - b[1]);
+                const sortedObject = {};
+
+                for (let [key, value] of sortedFrequenciesArray) {
+                    sortedObject[key] = value;
+                }
+
+                // sorting alphqbetically 
+
+                const sortedAlphabeticallyArray = Object.entries(wordsObject).sort()
+
+                const sortedObjectAlphabetically = {};
+
+                for (let [key, value] of sortedAlphabeticallyArray) {
+                    sortedObjectAlphabetically[key] = value;
+                }
+
+                sortingWordsButton.addEventListener('click', toggleWordsMode)
+
+                function toggleWordsMode() {
+                    if (stopSortingWordsFlag) {
+                        sortingWords();
+                    } else {
+                        randomWords();
+                    }
+                }
+
+                let stopRandomWordsFlag;
+                function stopRandomWords() {
+                    stopRandomWordsFlag = true;
+                }
+
+                let stopSortingWordsFlag;
+                function stopSortingWords() {
+                    stopSortingWordsFlag = true;
+                }
+
+                // random words
+                function randomWords() {
+
+                    stopSortingWords()
+
+                    stopRandomWordsFlag = false;
+
+                    sortingWordsButton.innerHTML = 'sort'
+
+                    wordCount = 0;
+
+                    container.innerHTML = '';
+                    container.style.flexDirection = 'unset';
+                    container.style.overflow = 'hidden';
+                    container.style.alignItems = 'unset';
+
+
+                    Object.keys(wordsObject).forEach((word, index) => {
 
                         if (stopRandomWordsFlag) return;
 
-                        const spanTag = document.createElement('span');
-                        const randomTop = Math.floor(Math.random() * (viewportHeight - spanTag.clientHeight));
-                        const randomLeft = Math.floor(Math.random() * (viewportWidth - spanTag.clientWidth));
+                        setTimeout(() => {
 
-                        spanTag.textContent = word;
-                        spanTag.className = 'word draggable';
+                            if (stopRandomWordsFlag) return;
 
-                        if (window.innerWidth < 768) {
-                            spanTag.style.fontSize = `${wordsObject[word] * 10}vw`;
-                        } else {
-                            spanTag.style.fontSize = `${wordsObject[word] * 2}vw`;
-                        }
+                            const spanTag = document.createElement('span');
+                            const randomTop = Math.floor(Math.random() * (viewportHeight - spanTag.clientHeight));
+                            const randomLeft = Math.floor(Math.random() * (viewportWidth - spanTag.clientWidth));
 
-                        spanTag.style.top = `${randomTop}px`;
-                        spanTag.style.left = `${randomLeft}px`;
+                            spanTag.textContent = word;
+                            spanTag.className = 'word draggable';
 
-                        wordCountTag.innerHTML = wordCount;
-                        wordCount++
+                            if (window.innerWidth < 768) {
+                                spanTag.style.fontSize = `${wordsObject[word] * 10}vw`;
+                            } else {
+                                spanTag.style.fontSize = `${wordsObject[word] * 2}vw`;
+                            }
 
-                        container.appendChild(spanTag);
+                            spanTag.style.top = `${randomTop}px`;
+                            spanTag.style.left = `${randomLeft}px`;
 
-                        requestAnimationFrame(() => {
-                            spanTag.style.opacity = '1';
-                        });
+                            wordCountTag.innerHTML = wordCount;
+                            wordCount++
 
-                        spanTag.addEventListener('mouseover', () => {
-                            wordFrequency.style.display = 'block'
-                            wordFrequency.innerHTML = wordsObject[word];
-                            const text = spanTag.textContent || spanTag.innerText;
-                            // speak(text);
-                        });
+                            container.appendChild(spanTag);
 
-                    }, 50 * index);
-                });
-            }
+                            requestAnimationFrame(() => {
+                                spanTag.style.opacity = '1';
+                            });
 
-            randomWords();
+                            spanTag.addEventListener('mouseover', () => {
+                                wordFrequency.style.display = 'block'
+                                wordFrequency.innerHTML = wordsObject[word];
+                                const text = spanTag.textContent || spanTag.innerText;
+                                speak(text);
+                            });
 
-            function sortingWords() {
+                        }, 50 * index);
+                    });
+                }
 
-                stopSortingWordsFlag = false;
+                randomWords();
 
-                stopRandomWords()
+                function sortingWords() {
 
-                sortingWordsButton.innerHTML = 'mix'
-                wordCount = 0;
+                    stopSortingWordsFlag = false;
 
-                container.innerHTML = '';
-                container.style.flexDirection = 'column';
-                container.style.overflow = 'auto';
-                container.style.alignItems = 'flex-wrap';
+                    stopRandomWords()
 
-                Object.keys(sortedObjectAlphabetically).forEach((word, index) => {
+                    sortingWordsButton.innerHTML = 'mix'
+                    wordCount = 0;
 
-                    if (stopSortingWordsFlag) return;
+                    container.innerHTML = '';
+                    container.style.flexDirection = 'column';
+                    container.style.overflow = 'auto';
+                    container.style.alignItems = 'flex-wrap';
 
-
-                    // Scroll to the bottom of the page
-                    // window.scrollTo(0, document.body.scrollHeight);
-
-                    setTimeout(() => {
+                    Object.keys(sortedObjectAlphabetically).forEach((word, index) => {
 
                         if (stopSortingWordsFlag) return;
 
-                        const spanTag = document.createElement('span');
 
-                        spanTag.textContent = word;
-                        spanTag.className = 'word-sorted';
+                        // Scroll to the bottom of the page
+                        // window.scrollTo(0, document.body.scrollHeight);
 
-                        if (window.innerWidth < 768) {
-                            spanTag.style.fontSize = `${wordsObject[word] * 10}vw`;
-                        } else {
-                            spanTag.style.fontSize = `${wordsObject[word] * 2}vw`;
-                        }
+                        setTimeout(() => {
 
-                        wordCountTag.innerHTML = wordCount;
-                        wordCount++
+                            if (stopSortingWordsFlag) return;
 
-                        container.appendChild(spanTag);
+                            const spanTag = document.createElement('span');
 
-                        requestAnimationFrame(() => {
-                            spanTag.style.opacity = '1';
-                        });
+                            spanTag.textContent = word;
+                            spanTag.className = 'word-sorted';
 
-                        spanTag.addEventListener('mouseover', () => {
-                            wordFrequency.style.display = 'block'
-                            wordFrequency.innerHTML = wordsObject[word];
+                            if (window.innerWidth < 768) {
+                                spanTag.style.fontSize = `${wordsObject[word] * 10}vw`;
+                            } else {
+                                spanTag.style.fontSize = `${wordsObject[word] * 2}vw`;
+                            }
 
-                            const text = spanTag.textContent || spanTag.innerText;
-                            //speak(text);
-                        });
-                    }, 50 * index);
-                });
+                            wordCountTag.innerHTML = wordCount;
+                            wordCount++
 
-            }
+                            container.appendChild(spanTag);
 
-        })
-        .catch(error => {
-            loader.textContent = 'invalid url, try another one';
-            console.error('Error:', error);
-        });
-})
+                            requestAnimationFrame(() => {
+                                spanTag.style.opacity = '1';
+                            });
 
+                            spanTag.addEventListener('mouseover', () => {
+                                wordFrequency.style.display = 'block'
+                                wordFrequency.innerHTML = wordsObject[word];
 
+                                const text = spanTag.textContent || spanTag.innerText;
+                                speak(text);
+                            });
+                        }, 50 * index);
+                    });
+
+                }
+
+            })
+            .catch(error => {
+                loader.textContent = 'invalid url, try another one';
+                console.error('Error:', error);
+            });
+    })
+
+});
 
