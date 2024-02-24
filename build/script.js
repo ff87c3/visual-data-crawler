@@ -106,7 +106,7 @@ document.addEventListener('DOMContentLoaded', function () {
             url = 'https://' + url;
         }
 
-        fetch('../api/serverless', {
+        fetch('./api/serverless', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
