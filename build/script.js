@@ -1,23 +1,4 @@
-///////// speech synthesis 
 
-/* let selectedVoice = null;
- 
-function populateVoices() {
-    const voices = speechSynthesis.getVoices();
-    selectedVoice = voices.find(voice => voice.name === 'Google UK English Female');
-}
- 
-speechSynthesis.onvoiceschanged = populateVoices;
- 
-populateVoices();
- 
-function speak(text) {
-    window.speechSynthesis.cancel();
-    var utterance = new SpeechSynthesisUtterance(text);
-    window.speechSynthesis.speak(utterance);
-} */
-
-/////////
 
 document.addEventListener('DOMContentLoaded', function () {
 
