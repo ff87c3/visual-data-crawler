@@ -19,7 +19,7 @@ function speak(text) {
 
 /////////
 
-let selectedVoice = null;
+/* let selectedVoice = null;
 
 function populateVoices() {
     const voices = speechSynthesis.getVoices();
@@ -62,9 +62,9 @@ function toggleSound() {
     }
 }
 
-/* soundToggleButton.addEventListener('click', toggleSound);
- */
-toggleSound();
+ soundToggleButton.addEventListener('click', toggleSound);
+ 
+toggleSound(); */
 
 ////////////
 
