@@ -147,7 +147,7 @@ document.getElementById('scrapeForm').addEventListener('submit', function (event
             wordCountTag.innerHTML = wordCount;
             container.innerHTML = '';
             loader.style.display = 'none'
-            soundToggleButton.style.display = 'block'
+            //soundToggleButton.style.display = 'block'
             sortingWordsButton.style.display = 'block'
             openClose.style.display = 'block'
 
@@ -262,7 +262,7 @@ document.getElementById('scrapeForm').addEventListener('submit', function (event
                             wordFrequency.style.display = 'block'
                             wordFrequency.innerHTML = wordsObject[word];
                             const text = spanTag.textContent || spanTag.innerText;
-                            speak(text);
+                            // speak(text);
                         });
 
                     }, 50 * index);
@@ -322,7 +322,7 @@ document.getElementById('scrapeForm').addEventListener('submit', function (event
                             wordFrequency.innerHTML = wordsObject[word];
 
                             const text = spanTag.textContent || spanTag.innerText;
-                            speak(text);
+                            //speak(text);
                         });
                     }, 50 * index);
                 });
