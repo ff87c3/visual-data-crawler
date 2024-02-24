@@ -62,8 +62,8 @@ function toggleSound() {
     }
 }
 
-soundToggleButton.addEventListener('click', toggleSound);
-
+/* soundToggleButton.addEventListener('click', toggleSound);
+ */
 toggleSound();
 
 ////////////
