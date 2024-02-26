@@ -14,43 +14,31 @@ function App() {
   useEffect(() => {
     const loader = document.getElementById("loader") as HTMLElement;
     const container = document.querySelector("#words-container") as HTMLElement;
-    const wordCountTag = document.getElementById("wordCount") as HTMLElement;
+    const wordCountTag: HTMLElement | null = document.getElementById(
+      "wordCount"
+    ) as HTMLElement;
     const wordFrequency = document.getElementById(
       "wordFrequency"
     ) as HTMLElement;
     // const input = document.querySelector("#url");
     const urlElement = document.getElementById("url") as HTMLInputElement;
-    const info = document.getElementById("info");
-    const openClose = document.getElementById("toggleOpenClose");
+    const info = document.getElementById("info") as HTMLElement;
+    const openClose = document.getElementById("toggleOpenClose") as HTMLElement;
     const sortingWordsButton = document.getElementById(
       "wordsModeButton"
     ) as HTMLElement;
-    const viewportWidth = window.innerWidth;
-    const viewportHeight = window.innerHeight;
-    const wordCountContainer = document.getElementById("wordCountContainer");
-    const inputForm = document.getElementById("scrapeForm");
+    const viewportWidth: number = window.innerWidth;
+    const viewportHeight: number = window.innerHeight;
+    const wordCountContainer = document.getElementById(
+      "wordCountContainer"
+    ) as HTMLElement;
+    const inputForm = document.getElementById("scrapeForm") as HTMLElement;
+    const soundToggleButton = document.getElementById(
+      "soundToggleButton"
+    ) as HTMLElement;
 
-    let isOpen = true;
-
-    /*     let selectedVoice: SpeechSynthesisVoice | null = null;
-
-    function populateVoices() {
-      const voices = speechSynthesis.getVoices();
-      selectedVoice = voices.find(
-        (voice) => voice.name === "Google UK English Female"
-      );
-    }
-
-    speechSynthesis.onvoiceschanged = populateVoices;
-
-    populateVoices(); */
-
-    /////////
-
-    const soundToggleButton = document.getElementById("soundToggleButton");
-
-    // This variable tracks if the sound is allowed to play
-    let isSoundEnabled = false;
+    let isOpen: boolean = true;
+    let isSoundEnabled: boolean = false;
 
     // Function to handle speaking text
     function speak(text: string) {
@@ -61,10 +49,6 @@ function App() {
         utterance.rate = 0.8;
 
         window.speechSynthesis.speak(utterance);
-
-        /*  if (selectedVoice) {
-          utterance.voice = selectedVoice;
-        } */
       }
     }
 
@@ -88,32 +72,23 @@ function App() {
     toggleSound();
 
     ////////////
-
-    if (openClose) {
-      openClose.addEventListener("click", () => {
-        if (isOpen) {
+    openClose?.addEventListener("click", () => {
+      if (isOpen) {
+        if (openClose && wordCountContainer && inputForm) {
           openClose.innerHTML = "⟳";
-
-          if (wordCountContainer) {
-            wordCountContainer.style.opacity = "0";
-          }
-
-          if (inputForm) {
-            inputForm.style.opacity = "0";
-          }
-          isOpen = false;
-        } else {
-          openClose.innerHTML = "X";
-          if (wordCountContainer) {
-            wordCountContainer.style.opacity = "1";
-          }
-          if (inputForm) {
-            inputForm.style.opacity = "1";
-          }
-          isOpen = true;
+          wordCountContainer.style.opacity = "0";
+          inputForm.style.opacity = "0";
         }
-      });
-    }
+        isOpen = false;
+      } else {
+        if (openClose && wordCountContainer && inputForm) {
+          openClose.innerHTML = "X";
+          wordCountContainer.style.opacity = "1";
+          inputForm.style.opacity = "1";
+        }
+        isOpen = true;
+      }
+    });
     ////////
 
     if (inputForm) {
@@ -164,8 +139,8 @@ function App() {
 
             const wordsObject: WordsObject = {};
 
-            wordCountTag.style.display = "block";
-            wordCountTag.innerHTML = wordCount.toString();
+            wordCountTag!.style.display = "block";
+            wordCountTag!.innerHTML = wordCount.toString();
             container!.innerHTML = "";
             loader!.style.display = "none";
             soundToggleButton!.style.display = "block";
@@ -384,7 +359,7 @@ function App() {
                   spanTag.style.top = `${randomTop}px`;
                   spanTag.style.left = `${randomLeft}px`;
 
-                  wordCountTag.innerHTML = wordCount.toString();
+                  wordCountTag!.innerHTML = wordCount.toString();
                   wordCount++;
 
                   container.appendChild(spanTag);
@@ -435,7 +410,7 @@ function App() {
                     spanTag.style.fontSize = `${wordsObject[word] * 2}vw`;
                   }
 
-                  wordCountTag.innerHTML = wordCount.toString();
+                  wordCountTag!.innerHTML = wordCount.toString();
                   wordCount++;
 
                   container.appendChild(spanTag);
