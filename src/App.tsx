@@ -1,6 +1,6 @@
 import React, { useEffect } from "react";
 
-import "./style.css";
+import "./style.scss";
 
 import ScrapeForm from "./components/ScrapeForm";
 import CloseButton from "./components/CloseButton";
@@ -12,7 +12,27 @@ import ButtonsContainer from "./components/ButtonsContainer";
 
 function App() {
   useEffect(() => {
-    let selectedVoice = null;
+    const loader = document.getElementById("loader") as HTMLElement;
+    const container = document.querySelector("#words-container") as HTMLElement;
+    const wordCountTag = document.getElementById("wordCount") as HTMLElement;
+    const wordFrequency = document.getElementById(
+      "wordFrequency"
+    ) as HTMLElement;
+    // const input = document.querySelector("#url");
+    const urlElement = document.getElementById("url") as HTMLInputElement;
+    const info = document.getElementById("info");
+    const openClose = document.getElementById("toggleOpenClose");
+    const sortingWordsButton = document.getElementById(
+      "wordsModeButton"
+    ) as HTMLElement;
+    const viewportWidth = window.innerWidth;
+    const viewportHeight = window.innerHeight;
+    const wordCountContainer = document.getElementById("wordCountContainer");
+    const inputForm = document.getElementById("scrapeForm");
+
+    let isOpen = true;
+
+    /*     let selectedVoice: SpeechSynthesisVoice | null = null;
 
     function populateVoices() {
       const voices = speechSynthesis.getVoices();
@@ -23,7 +43,7 @@ function App() {
 
     speechSynthesis.onvoiceschanged = populateVoices;
 
-    populateVoices();
+    populateVoices(); */
 
     /////////
 
@@ -33,7 +53,7 @@ function App() {
     let isSoundEnabled = false;
 
     // Function to handle speaking text
-    function speak(text) {
+    function speak(text: string) {
       window.speechSynthesis.cancel();
       if (isSoundEnabled) {
         const utterance = new SpeechSynthesisUtterance(text);
@@ -42,74 +62,73 @@ function App() {
 
         window.speechSynthesis.speak(utterance);
 
-        if (selectedVoice) {
+        /*  if (selectedVoice) {
           utterance.voice = selectedVoice;
-        }
+        } */
       }
     }
 
     // Toggle sound function
     function toggleSound() {
       isSoundEnabled = !isSoundEnabled;
-      soundToggleButton.style.textDecoration = isSoundEnabled
-        ? "none"
-        : "line-through";
+      if (soundToggleButton) {
+        soundToggleButton.style.textDecoration = isSoundEnabled
+          ? "none"
+          : "line-through";
+      }
+
       if (!isSoundEnabled) {
         window.speechSynthesis.cancel();
       }
     }
-
-    soundToggleButton.addEventListener("click", toggleSound);
+    if (soundToggleButton) {
+      soundToggleButton.addEventListener("click", toggleSound);
+    }
 
     toggleSound();
 
     ////////////
 
-    const loader = document.getElementById("loader");
-    const container = document.querySelector("#words-container");
-    const wordCountTag = document.getElementById("wordCount");
-    const wordFrequency = document.getElementById("wordFrequency");
-    const input = document.querySelector("#url");
-    const info = document.getElementById("info");
-    const openClose = document.getElementById("toggleOpenClose");
-    const sortingWordsButton = document.getElementById("wordsModeButton");
-    const viewportWidth = window.innerWidth;
-    const viewportHeight = window.innerHeight;
-    const wordCountContainer = document.getElementById("wordCountContainer");
-    const inputForm = document.getElementById("scrapeForm");
+    if (openClose) {
+      openClose.addEventListener("click", () => {
+        if (isOpen) {
+          openClose.innerHTML = "⟳";
 
-    let isOpen = true;
+          if (wordCountContainer) {
+            wordCountContainer.style.opacity = "0";
+          }
 
-    openClose.addEventListener("click", () => {
-      if (isOpen) {
-        openClose.innerHTML = "⟳";
-        wordCountContainer.style.opacity = 0;
-        inputForm.style.opacity = 0;
-        isOpen = false;
-      } else {
-        openClose.innerHTML = "X";
-        wordCountContainer.style.opacity = 1;
-        inputForm.style.opacity = 1;
-        isOpen = true;
-      }
-    });
-
+          if (inputForm) {
+            inputForm.style.opacity = "0";
+          }
+          isOpen = false;
+        } else {
+          openClose.innerHTML = "X";
+          if (wordCountContainer) {
+            wordCountContainer.style.opacity = "1";
+          }
+          if (inputForm) {
+            inputForm.style.opacity = "1";
+          }
+          isOpen = true;
+        }
+      });
+    }
     ////////
 
-    document
-      .getElementById("scrapeForm")
-      .addEventListener("submit", function (event) {
+    if (inputForm) {
+      inputForm.addEventListener("submit", function (event) {
         event.preventDefault();
 
-        let url = document.getElementById("url").value;
+        let url = urlElement.value;
 
-        info.style.display = "none";
-        container.innerHTML = "";
-        input.value = "";
-        wordCountTag.style.display = "none";
-        loader.style.display = "block";
-        wordFrequency.style.display = "none";
-        loader.textContent = "fetching words";
+        info!.style.display = "none";
+        container!.innerHTML = "";
+        urlElement!.value = "";
+        wordCountTag!.style.display = "none";
+        loader!.style.display = "block";
+        wordFrequency!.style.display = "none";
+        loader!.textContent = "fetching words";
 
         if (!url.startsWith("https://") && !url.startsWith("http://")) {
           url = "https://" + url;
@@ -134,20 +153,26 @@ function App() {
             const text = data.text || "invalid URL, try another one";
             const rawArray = text.split(/\s+/);
             const wordsArray = rawArray;
-            const wordsArrayWithoutSignsLowerCase = wordsArray.map((word) =>
-              word.replace(/[\.:,...)(;&*?/_©<>-]/, "").toLowerCase()
+            const wordsArrayWithoutSignsLowerCase = wordsArray.map(
+              (word: string) =>
+                word.replace(/[.:,...)(;&*?/_©<>-]/, "").toLowerCase()
             );
-            const wordsObject = {};
+
+            type WordsObject = {
+              [key: string]: number;
+            };
+
+            const wordsObject: WordsObject = {};
 
             wordCountTag.style.display = "block";
-            wordCountTag.innerHTML = wordCount;
-            container.innerHTML = "";
-            loader.style.display = "none";
-            soundToggleButton.style.display = "block";
-            sortingWordsButton.style.display = "block";
-            openClose.style.display = "block";
+            wordCountTag.innerHTML = wordCount.toString();
+            container!.innerHTML = "";
+            loader!.style.display = "none";
+            soundToggleButton!.style.display = "block";
+            sortingWordsButton!.style.display = "block";
+            openClose!.style.display = "block";
 
-            wordsArrayWithoutSignsLowerCase.forEach((word) => {
+            wordsArrayWithoutSignsLowerCase.forEach((word: string) => {
               if (wordsObject.hasOwnProperty(word)) {
                 wordsObject[word] += 1;
               } else {
@@ -162,6 +187,78 @@ function App() {
               "of",
               "by",
               "is",
+              "on",
+              "at",
+              "it",
+              "as",
+              "with",
+              "for",
+              "is",
+              "that",
+              "you",
+              "we",
+              "he",
+              "she",
+              "it",
+              "they",
+              "will",
+              "i",
+              "me",
+              "him",
+              "her",
+              "us",
+              "them",
+              "my",
+              "mine",
+              "your",
+              "yours",
+              "his",
+              "hers",
+              "its",
+              "our",
+              "ours",
+              "their",
+              "theirs",
+              "this",
+              "that",
+              "these",
+              "those",
+              "which",
+              "who",
+              "whom",
+              "what",
+              "when",
+              "why",
+              "how",
+              "all",
+              "any",
+              "both",
+              "each",
+              "few",
+              "more",
+              "most",
+              "other",
+              "some",
+              "such",
+              "no",
+              "nor",
+              "not",
+              "only",
+              "own",
+              "same",
+              "so",
+              "than",
+              "too",
+              "very",
+              "s",
+              "t",
+              "can",
+              "will",
+              "just",
+              "don",
+              "should",
+              "now",
+              "ve",
               "and",
               "or",
               "but",
@@ -172,6 +269,30 @@ function App() {
               "with",
               "to",
               "on",
+              "at",
+              "from",
+              "for",
+              "about",
+              "like",
+              "over",
+              "after",
+              "into",
+              "through",
+              "before",
+              "same",
+              "over",
+              "under",
+              "between",
+              "only",
+              "after",
+              "into",
+              "through",
+              "before",
+              "same",
+              "over",
+              "under",
+              "between",
+              "only",
             ];
 
             keysToRemove.forEach((keyToRemove) => {
@@ -185,8 +306,7 @@ function App() {
             const sortedFrequenciesArray = Object.entries(wordsObject).sort(
               (a, b) => b[1] - a[1]
             );
-            //const sortedFrequenciesArray = Object.entries(wordsObject).sort((a, b) => a[1] - b[1]);
-            const sortedObject = {};
+            const sortedObject: Record<string, any> = {};
 
             for (let [key, value] of sortedFrequenciesArray) {
               sortedObject[key] = value;
@@ -197,13 +317,13 @@ function App() {
             const sortedAlphabeticallyArray =
               Object.entries(wordsObject).sort();
 
-            const sortedObjectAlphabetically = {};
+            const sortedObjectAlphabetically: Record<string, any> = {};
 
             for (let [key, value] of sortedAlphabeticallyArray) {
               sortedObjectAlphabetically[key] = value;
             }
 
-            sortingWordsButton.addEventListener("click", toggleWordsMode);
+            sortingWordsButton!.addEventListener("click", toggleWordsMode);
 
             function toggleWordsMode() {
               if (stopSortingWordsFlag) {
@@ -213,12 +333,12 @@ function App() {
               }
             }
 
-            let stopRandomWordsFlag;
+            let stopRandomWordsFlag: boolean;
             function stopRandomWords() {
               stopRandomWordsFlag = true;
             }
 
-            let stopSortingWordsFlag;
+            let stopSortingWordsFlag: boolean;
             function stopSortingWords() {
               stopSortingWordsFlag = true;
             }
@@ -264,7 +384,7 @@ function App() {
                   spanTag.style.top = `${randomTop}px`;
                   spanTag.style.left = `${randomLeft}px`;
 
-                  wordCountTag.innerHTML = wordCount;
+                  wordCountTag.innerHTML = wordCount.toString();
                   wordCount++;
 
                   container.appendChild(spanTag);
@@ -275,7 +395,7 @@ function App() {
 
                   spanTag.addEventListener("mouseover", () => {
                     wordFrequency.style.display = "block";
-                    wordFrequency.innerHTML = wordsObject[word];
+                    wordFrequency.innerHTML = wordsObject[word].toString();
                     const text = spanTag.textContent || spanTag.innerText;
                     speak(text);
                   });
@@ -301,9 +421,6 @@ function App() {
               Object.keys(sortedObjectAlphabetically).forEach((word, index) => {
                 if (stopSortingWordsFlag) return;
 
-                // Scroll to the bottom of the page
-                // window.scrollTo(0, document.body.scrollHeight);
-
                 setTimeout(() => {
                   if (stopSortingWordsFlag) return;
 
@@ -318,7 +435,7 @@ function App() {
                     spanTag.style.fontSize = `${wordsObject[word] * 2}vw`;
                   }
 
-                  wordCountTag.innerHTML = wordCount;
+                  wordCountTag.innerHTML = wordCount.toString();
                   wordCount++;
 
                   container.appendChild(spanTag);
@@ -329,7 +446,7 @@ function App() {
 
                   spanTag.addEventListener("mouseover", () => {
                     wordFrequency.style.display = "block";
-                    wordFrequency.innerHTML = wordsObject[word];
+                    wordFrequency.innerHTML = wordsObject[word].toString();
 
                     const text = spanTag.textContent || spanTag.innerText;
                     speak(text);
@@ -343,10 +460,11 @@ function App() {
             console.error("Error:", error);
           });
       });
+    }
   }, []);
 
   return (
-    <div className="App">
+    <>
       <ScrapeForm />
       <CloseButton />
       <Loader />
@@ -354,7 +472,7 @@ function App() {
       <ButtonsContainer />
       <Transition />
       <Info />
-    </div>
+    </>
   );
 }
 
