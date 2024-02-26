@@ -9,9 +9,7 @@
 /coverage
 
 # production
-
-.gitignore
-/OFF
+build/
 
 # misc
 .DS_Store
